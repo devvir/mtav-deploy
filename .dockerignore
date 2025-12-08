@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.secrets
+.env.example
+README.md
+DEPLOYMENT_SUMMARY.md
+DEPLOYMENT_CHECKLIST.md
+FIXES_APPLIED.md
+lib/
+*.md

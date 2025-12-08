@@ -1,0 +1,12 @@
+# MTAV Service Tags for the current App Version
+# The set of service tags defines the version of the app that will be deployed.
+
+# ------------------------------------------------------------------------------------ #
+# This file is automatically updated during builds and should NOT be modified manually #
+# ------------------------------------------------------------------------------------ #
+php: '1.0.0'
+assets: '1.0.0'
+nginx: '1.0.0'
+mysql: '1.0.0'
+migrations: '1.0.0'
+queue: '1.0.0'

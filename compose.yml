@@ -1,0 +1,86 @@
+services:
+  # PHP-FPM only
+  php:
+    image: ghcr.io/devvir/mtav-php:${PHP_TAG}
+    restart: unless-stopped
+    volumes:
+      - app_storage:/var/www/storage
+      - vite_manifest:/var/www/html/vite_manifest
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Static assets service
+  assets:
+    image: ghcr.io/devvir/mtav-assets:${ASSETS_TAG}
+    restart: unless-stopped
+    volumes:
+      - vite_manifest:/vite_manifest
+
+  # Reverse proxy
+  nginx:
+    image: ghcr.io/devvir/mtav-nginx:${NGINX_TAG}
+    restart: unless-stopped
+    depends_on:
+      - php
+      - assets
+    ports:
+      - "8080:80"
+
+  # Database
+  mysql:
+    image: ghcr.io/devvir/mtav-mysql:${MYSQL_TAG}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MARIADB_INNODB_USE_NATIVE_AIO: 0
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+
+  # Database migrations
+  migrations:
+    image: ghcr.io/devvir/mtav-migrations:${MIGRATIONS_TAG}
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+
+  # Queue workers (supervisord managing 3 worker processes)
+  queue:
+    image: ghcr.io/devvir/mtav-queue:${QUEUE_TAG}
+    restart: unless-stopped
+    volumes:
+      - app_storage:/var/www/storage
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # Mail testing server (preview only)
+  mailhog:
+    image: mailhog/mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  mysql_data:
+  app_storage:
+  vite_manifest:
+
+networks:
+  default:
+    name: prod
