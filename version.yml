@@ -4,9 +4,9 @@
 # ------------------------------------------------------------------------------------ #
 # This file is automatically updated during builds and should NOT be modified manually #
 # ------------------------------------------------------------------------------------ #
-php: '1.0.0'
-assets: '1.0.0'
-nginx: '1.0.0'
-mysql: '1.0.0'
-migrations: '1.0.0'
-queue: '1.0.0'
+php: '1.0.1'
+assets: '1.0.1'
+nginx: '1.0.1'
+mysql: '1.0.1'
+migrations: '1.0.1'
+queue: '1.0.1'
